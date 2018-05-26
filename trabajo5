@@ -1,0 +1,206 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include<windows.h>
+#define N 35
+struct jug
+{
+    char nombre[N];
+    int vidas;
+    int puntos;
+    int muertes;
+
+};
+void movebul(int a[][N], struct jug *jugador, int width);
+void print(int a[][N], struct jug *jugador,int width );
+void HideCursor();
+void compareMax(struct jug *act);
+void gameOver(struct jug *act);
+void HideCursor()
+{
+    CONSOLE_CURSOR_INFO cursor_info = {1, 0};
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);
+}
+void main()
+
+{
+    int scr[22][N]= {0};
+    int pl=9,width=24,speed=3,density=30;
+
+    struct jug jugador;
+    strcpy( jugador.nombre, "C Programming");
+    jugador.vidas = 2;
+    jugador.puntos = 0;
+    jugador.muertes = 0;
+
+    scr[21][pl]=1;
+    scr[0][5]=3;
+
+}
+void print(int a[][N], struct jug *jugador,int width )
+
+{
+    HideCursor();
+
+    system("cls");
+
+    int i,j;
+
+    for(i=0; i<22; i++)
+
+    {
+
+        a[i][width-1]=4;
+
+        for(j=0; j<width; j++)
+
+        {
+
+            if(a[i][j]==0)
+
+                printf(" ");
+
+            if(a[i][j]==1) //1 = player
+
+                printf("*");
+
+            if(a[i][j]==2) // 2 = bullet
+
+                printf(".");
+
+            if(a[i][j]==3) // 3 = enemy
+
+                printf("O");
+
+            if(a[i][j]==4) // 4 = wall
+
+                printf("|");
+
+            if(i==0&&j==width-1)  // /score
+
+                printf("PUNTOS:%d",jugador->puntos);
+
+            if(i==1&&j==width-1)   //NUMERO DE muerte
+
+                printf("MUERTES:%d",jugador->muertes);
+
+            if(i==2&&j==width-1)    //SALIR
+
+                printf("CONFIGURAR:Esc");
+
+            if(i==3&&j==width-1)   //WHO MADE THIS GAME!
+
+                printf("Copyright:MINYA,SHANSHAN,YU,ROSA,JING");
+
+        }
+
+        printf("\n");
+
+    }
+
+}
+void movebul(int a[][N], struct jug *jugador, int width)
+
+{
+
+    int i,j;
+
+    for(i=0; i<22; i++)
+
+        for(j=0; j<width; j++)
+
+        {
+            if(i==0&&a[i][j]==2)
+
+                a[i][j]=0;
+
+            if(a[i][j]==2)//FINGDING BULLETS
+
+            {
+
+                if(a[i-1][j]==3)
+
+                    jugador->puntos+=10,printf("\7"); //IF THE BULLET TOUCHES THE ENEMY SHIP I WILL ADD THE SCORE AND MAKE THE SOUND
+
+                a[i][j]=0,a[i-1][j]=2;
+
+            }
+
+        }
+
+}
+void gameOver(struct jug *act)
+{
+    int i = 0;
+    system("cls");
+    printf("game over!");
+    compareMax(act);
+    getch();
+    system("cls");
+    main();
+}
+void compareMax(struct jug *act) {
+    FILE *fp;
+    int max = 0, i = 0;
+    char auxChar;
+    char auxNum[10];
+    char auxNom[100];
+    fp = fopen("MaxScore.txt", "r");
+    if (fp == NULL) {
+        printf("\nIntroducir tu nombre: ");
+        scanf("%s", act->nombre);
+        fclose(fp);
+        fp = fopen("MaxScore.txt", "w");
+        fprintf(fp, "El nombre es: %s\n", act->nombre);
+        fprintf(fp, "Los puntos maximos es: %d\n", act->puntos);
+        printf("Max puntos: %d\nNombre: %s\n", act->puntos, act->nombre);
+        fclose(fp);
+    } else {
+        while (!feof(fp)){
+            auxChar = fgetc(fp);
+            if (auxChar > 47 && auxChar < 58) {
+                auxNum[i] = auxChar;
+                i++;
+            }
+        }
+        sscanf(auxNum, "%d", &max);
+        if (act->puntos >= max) {
+            printf("\nIntroducir tu nombre: ");
+            scanf("%s", act->nombre);
+            fclose(fp);
+            fp = fopen("MaxScore.txt", "w");
+            fprintf(fp, "El nombre es: %s\n", act->nombre);
+            fprintf(fp, "Los puntos maximos es: %d\n", act->puntos);
+            printf("\nMax puntos: %d\nNombre: %s\n", act->puntos, act->nombre);
+            fclose(fp);
+        } else {
+            int j = 0;
+            i = 0;
+            fclose(fp);
+            fp = fopen("MaxScore.txt", "r");
+            while (!feof(fp)){
+                auxChar = fgetc(fp);
+                if (auxChar == ':') {
+                    i++;
+                }
+                if (auxChar == ' ' && i == 1) {
+                    i++;
+                }
+                if (i == 2) {
+                    if (auxChar == '\n') {
+                        goto loop;
+                    } else {
+                        auxNom[j] = auxChar;
+                        j++;
+                    }
+                }
+            }
+loop:       printf("\nMax puntos: %d\nNombre:", max);
+            for (i = 0; i < j; i++) {
+                printf("%c", auxNom[i]);
+            }
+            printf("\n");
+            fclose(fp);
+        }
+    }
+}
