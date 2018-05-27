@@ -1,14 +1,14 @@
 APORTACIONES DE CADA MIEMBRO DEL EQUIPO
 
-*SHANSHSN ZHOU : Definicion de la estructura que contiene el nombre del jugador,numero de vidas ,puntuacion y muerte.Definicion de librerias .CreaciÛn de 
-la funciÛn que compara la puntuacion actual con la m·xima obtenida.Si Èsta es mayor se guarda como la m·xima.
+*SHANSHSN ZHOU : Definicion de la estructura que contiene el nombre del jugador,numero de vidas ,puntuacion y muerte.Definicion de librerias .Creaci√≥n de 
+la funci√≥n que compara la puntuacion actual con la m√°xima obtenida.Si √©sta es mayor se guarda como la m√°xima.
 
-*ROSA SILVERIO : Agregar los icÛnos que aparecen en la pantalla(configuraciÛn,n˙mero de muertes,puntuaciÛn,copyright).ElaboraciÛn de la funciÛn que permite elegir el tamaÒo del juego,el de los  enemigos y su velocidad.
-Adem·s le proporciona los colores al juego.
+*ROSA SILVERIO : Agregar los ic√≥nos que aparecen en la pantalla(configuraci√≥n,n√∫mero de muertes,puntuaci√≥n,copyright).Elaboraci√≥n de la funci√≥n que permite elegir el tama√±o del juego,el de los  enemigos y su velocidad.
+Adem√°s le proporciona los colores al juego.
 
-*YU CHEN: AÒade funciÛn que permite controlar el movimiento de los disparos,mediante las teclas a Û A, d Û D , w Û W.Instrucciones de juego al inicio de la partida.
+*YU CHEN: A√±ade funci√≥n que permite controlar el movimiento de los disparos,mediante las teclas a √≥ A, d √≥ D , w √≥ W.Instrucciones de juego al inicio de la partida.
 
 
-*JING ZENG: FunciÛn que esconde el cursor.Y otra que permite el  control  de los movimientos del jugador
+*JING ZENG: Funci√≥n que esconde el cursor.Y otra que permite el  control  de los movimientos del jugador
 
-*MINYA CHEN: fuciones que permiten impresion del game over al terminar una partida y otra que permite inicializar la direccion de los aviones y la interfaz del juego.
+*MINYA CHEN: fuciones que permiten impresion del game over al terminar una partida y otra que permite inicializar la direccion de los aviones y la interfaz del juego.Y tambi√©n los comentarios para entender mejor el juego.
