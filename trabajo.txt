@@ -1,0 +1,14 @@
+APORTACIONES DE CADA MIEMBRO DEL EQUIPO
+
+*SHANSHSN ZHOU : Definicion de la estructura que contiene el nombre del jugador,numero de vidas ,puntuacion y muerte.Definicion de librerias .Creación de 
+la función que compara la puntuacion actual con la máxima obtenida.Si ésta es mayor se guarda como la máxima.
+
+*ROSA SILVERIO : Agregar los icónos que aparecen en la pantalla(configuración,número de muertes,puntuación,copyright).Elaboración de la función que permite elegir el tamaño del juego,el de los  enemigos y su velocidad.
+Además le proporciona los colores al juego.
+
+*YU CHEN: Añade función que permite controlar el movimiento de los disparos,mediante las teclas a ó A, d ó D , w ó W.Instrucciones de juego al inicio de la partida.
+
+
+*JING ZENG: Función que esconde el cursor.Y otra que permite el  control  de los movimientos del jugador
+
+*MINYA CHEN: fuciones que permiten impresion del game over al terminar una partida y otra que permite inicializar la direccion de los aviones y la interfaz del juego.
