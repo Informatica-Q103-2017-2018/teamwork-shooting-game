@@ -1,0 +1,505 @@
+#include <stdio.h>
+#include <conio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
+#include<windows.h>
+#define N 35
+
+struct jug
+{
+    char nombre[N];
+    int vidas;
+    int puntos;
+    int muertes;
+
+};
+
+void run(struct jug *jugador, int scr[22][N], int *pl, int *width, int *speed, int *density);
+void movepla(int a[][N], struct jug *jugador, int *pl, int *width, int *speed, int*density);
+void print(int a[][N], struct jug *jugador,int width );
+void movebul(int a[][N], struct jug *jugador, int width);
+void setting(int scr[][N], int *pl, int *width, int *speed, int *density);
+void menu(struct jug *jugador, int scr[][N],int *pl, int *width, int *speed, int *density);
+void gameOver(struct jug *act);
+void HideCursor();
+void compareMax(struct jug *act);
+
+void HideCursor()
+{
+    CONSOLE_CURSOR_INFO cursor_info = {1, 0};
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);
+}
+
+
+void main()
+
+{
+    system("Color 3E");
+    int scr[22][N]= {0}; // mapa
+    int pl=9,width=24,speed=3,density=30; //pl = pos inicial el jugador en el eje x. width el ancho del mapa. speed = velocidad del juego. density = densidad de enemigos (dificultad)
+
+    struct jug jugador;
+    strcpy( jugador.nombre, "C Programming");
+    jugador.vidas = 2;
+    jugador.puntos = 0;
+    jugador.muertes = 0;
+
+    run(&jugador, scr, &pl,&width,&speed,&density);
+
+
+
+    scr[21][pl]=1;
+    scr[0][5]=3;
+
+}
+
+void run(struct jug *jugador, int scr[22][N], int *pl, int *width, int *speed, int *density)
+{
+
+
+
+    int i=0,j=0;
+
+    menu(jugador,scr,pl,width,speed,density); //se llama al menu antes de comenzar el juego
+
+    while(1)
+    {
+        if(kbhit()) //kbhit para que se lea constantemente el input cada frame
+
+            switch(getch())
+
+            {
+
+            case 'a':
+            case 'A':
+
+                if(*pl>0)
+
+                    scr[21][*pl]=0,scr[21][--*pl]=1; // mover el jugador a la izquierda
+
+                break;
+
+            case 'd':
+            case 'D':
+
+                if(*pl<*width-2)
+
+                    scr[21][*pl]=0,scr[21][++*pl]=1; // mover el jugador a la derecha
+
+                break;
+
+            case 'w':
+            case 'W':
+
+                scr[20][*pl]=2; // disparar
+
+                break;
+
+            case 27 :
+
+                setting(scr,pl,width,speed,density); //modificar opciones
+
+                break;
+
+            }
+
+
+
+        if(++j%*density==0) // densidad de enemigos
+
+        {
+
+            j=0;
+            srand(time(NULL));
+
+            scr[0][rand()%*width]=3; //generar un numero aleatorio de enemigos
+
+        }
+
+        if(++i%*speed==0)
+
+        movepla(scr,jugador,pl,width,speed,density);
+
+        movebul(scr,jugador,*width);
+
+
+
+        print(scr,jugador,*width);
+
+        if(i==30000) //se resetea i a 0  para que no tome valores demasiado altos y evitar overflow (ya que solo funciona para avanzar los frames)
+
+            i=0;
+
+    }
+
+}
+
+void print(int a[][N], struct jug *jugador,int width )
+
+{
+    HideCursor(); //esconde el cursor
+
+    system("cls"); //Se limpia la pantalla cada frame
+
+    int i,j;
+
+    for(i=0; i<22; i++)
+
+    {
+
+        a[i][width-1]=4;
+
+        for(j=0; j<width; j++)
+
+        {
+
+            if(a[i][j]==0)
+
+                printf(" ");
+
+            if(a[i][j]==1) //1 = jugador
+
+                printf("*");
+
+            if(a[i][j]==2) // 2 = balas
+
+                printf(".");
+
+            if(a[i][j]==3) // 3 = enemigos
+
+                printf("O");
+
+            if(a[i][j]==4) // 4 = pared
+
+                printf("|");
+
+            if(i==0&&j==width-1)  // puntuacion
+
+                printf("PUNTOS:%d",jugador->puntos);
+
+            if(i==1&&j==width-1)   //numero de muerte
+
+                printf("MUERTES:%d",jugador->muertes);
+
+            if(i==2&&j==width-1)    //salir
+
+                printf("CONFIGURAR:Esc");
+
+            if(i==3&&j==width-1)   //quienes han hecho el juego
+
+                printf("Copyright:MINYA,SHANSHAN,YU,ROSA,JING");
+
+        }
+
+        printf("\n");
+
+    }
+
+}
+
+void movebul(int a[][N], struct jug *jugador, int width)
+
+{
+
+    int i,j;
+
+    for(i=0; i<22; i++)
+
+        for(j=0; j<width; j++)
+
+        {
+            if(i==0&&a[i][j]==2)
+
+                a[i][j]=0;
+
+            if(a[i][j]==2)// se busca en cada frame una bala
+
+            {
+
+                if(a[i-1][j]==3)
+
+                    jugador->puntos+=10,printf("\7"); //si se encuentra un enemigo arriba de la bala se suman los puntos
+
+                a[i][j]=0,a[i-1][j]=2; //movemos la bala hacia arriba;
+
+            }
+
+        }
+
+}
+
+void movepla(int a[][N], struct jug *jugador, int *pl, int *width, int *speed, int*density)
+
+{
+
+    int i,j;
+
+    for(i=21; i>=0; i--)
+
+        for(j=0; j<*width; j++)
+
+        {
+
+            if(i==21&&a[i][j]==3) //se borra el enemigo cuando llega al fondo de la pantalla
+
+                a[i][j]=0;
+
+            if(a[i][j]==3)  //se mueve el enemigo hacia abajo
+
+                a[i][j]=0,a[i+1][j]=3;
+
+        }
+
+    if(a[20][*pl]==3&&a[21][*pl]==1) //si damos con el jugador
+    {
+        if (jugador->vidas>0)
+        {
+            system("cls");
+            jugador->vidas--;
+            jugador->muertes++;
+            run(jugador,a,pl,width,speed,density); //se comienza de nuevo pero con una vida menos y una muerte mas
+        }
+        else
+            gameOver(jugador);
+
+    }
+
+}
+
+void setting(int scr[][N], int *pl, int *width, int *speed, int *density) //modifica las opciones del juego
+
+{
+
+    int sw=0,i,j;
+
+    system("cls");
+
+    do
+    {
+        sw=0;
+        printf("\n TAMANO DEL JUEGO:1.GRANDE 2.PEQUENO>> ");
+
+        switch(getche())
+
+        {
+
+        case '1':
+
+            *width=34;
+
+            break;
+
+        case '2':
+
+            *width=24;
+
+            break;
+
+        default:
+
+            printf("\n ERROR,VOLVER A ELEGIR...\n");
+
+            sw=1;
+
+        }
+
+    }
+
+    while(sw);
+
+    do
+
+    {
+
+        sw=0;
+
+        printf("\n TAMANO DEL AVION DEL ENEMIGO:1.GRANDE 2.MEDIO 3.PEQUENO>> ");
+
+        switch(getche())
+
+        {
+
+        case '0':
+
+            *density=10;
+
+            break;
+
+        case '1':
+
+            *density=20;
+
+            break;
+
+        case '2':
+
+            *density=30;
+
+            break;
+
+        case '3':
+
+            *density=40;
+
+            break;
+
+        default:
+
+            printf("\n ERROR,VOLVER A ELEGIR...\n");
+
+            sw=1;
+
+        }
+
+    }
+    while(sw);
+
+    do
+
+    {
+
+        sw=0;
+
+        printf("\n VELOCIDAD DE AVION DEL ENEMIGO: 1.RAPIDO 2.MEDIO 3.LENTO>> ");
+
+        switch(getche())
+
+        {
+
+        case '1':
+
+            *speed=2;
+
+            break;
+
+        case '2':
+
+            *speed=3;
+
+            break;
+
+        case '3':
+
+            *speed=4;
+
+            break;
+
+        default:
+
+            printf("\n ERROR,VOLVER A ELEGIR...\n");
+
+            sw=1;
+
+        }
+
+    }
+    while(sw);
+
+    for(i=0; i<22; i++)
+
+        for(j=0; j<45; j++)
+
+            scr[i][j]=0;
+
+    scr[21][*pl=9]=1;
+
+    printf("\n CUALQUIER BOTON PARA GUARDAR LA CONFIGURACION..");
+
+    getch();
+
+}
+
+void menu(struct jug *jugador, int scr[][N],int *pl, int *width, int *speed, int *density)
+
+{
+
+    printf("Pulsa cualquier tecla para jugar\n\n");
+    printf("Instrucciones: A/a:izquierda , D/d:derecha , W/w:disparar\n\n");
+    printf("Vidas: %d", jugador->vidas);// Numero de vidas
+
+
+
+    if(getch()==27)
+
+        setting(scr,pl,width,speed,density);
+
+}
+
+void gameOver(struct jug *act)
+{
+    int i = 0;
+    system("cls");
+    printf("game over!");
+    compareMax(act); //se compara si tiene la puntuacion maxima
+    system("PAUSE");
+    system("cls");
+    main();
+}
+
+void compareMax(struct jug *act) 
+{
+    FILE *fp;
+    int max = 0, i = 0;
+    char auxChar;
+    char auxNum[10];
+    char auxNom[100];
+    fp = fopen("MaxScore.txt", "r");
+    if (fp == NULL) { //si es la primera vez que juega el juego se introduce el nombre y se añade la puntuación como la puntuación máxima
+        printf("\nIntroducir tu nombre: ");
+        scanf("%s", act->nombre);
+        fclose(fp);
+        fp = fopen("MaxScore.txt", "w");
+        fprintf(fp, "El nombre es: %s\n", act->nombre);
+        fprintf(fp, "La puntuacion maxima es: %d\n", act->puntos);
+        printf("Max score: %d\nNombre: %s\n", act->puntos, act->nombre);
+        fclose(fp);
+    } else { // si en el fichero ya tiene puntuacion
+        while (!feof(fp)){ //se lee la puntuacion y la guarda en un vector auxiliar
+            auxChar = fgetc(fp);
+            if (auxChar > 47 && auxChar < 58) { //si es un numero entero
+                auxNum[i] = auxChar;
+                i++;
+            }
+        }
+        sscanf(auxNum, "%d", &max); //se guarda la puntuacion en la maxima
+        if (act->puntos >= max) { //empieza a comparar la puntuacion actual con la anteror si es mayor que el anterior se cambia la maxima por la actual
+            printf("\nIntroducir tu nombre: ");
+            scanf("%s", act->nombre);
+            fclose(fp);
+            fp = fopen("MaxScore.txt", "w");
+            fprintf(fp, "El nombre es: %s\n", act->nombre);
+            fprintf(fp, "La puntuacion maxima es: %d\n", act->puntos);
+            printf("\nMax score: %d\nNombre: %s\n", act->puntos, act->nombre);
+            fclose(fp);
+        } else {//si la puntuacion actual es menor que la anterior
+            int j = 0;
+            i = 0;
+            fclose(fp);
+            fp = fopen("MaxScore.txt", "r");
+            while (!feof(fp)){
+                auxChar = fgetc(fp);
+                if (auxChar == ':') {//se busca el nombre,es decir,cuando se lee un : se suma 1 a i
+                    i++;
+                }
+                if (auxChar == ' ' && i == 1) { //cuando se lee un espacio se suma suma 1 a i
+                    i++;
+                }
+                if (i == 2) {
+                    if (auxChar == '\n') { //cuando se lee un new line se suma 1 a i
+                        goto imprimir;//si cumple los tres condiciones,se imprime la informacion
+                    } else { //se guarda el nombre del jugador con la mayor puntuacion
+                        auxNom[j] = auxChar;
+                        j++;
+                    }
+                }
+            }
+imprimir:       printf("\nMax score: %d\nNombre: ", max);//cuando se encuentra el string
+            for (i = 0; i < j; i++) {
+                printf("%c", auxNom[i]);//se imprime el nombre del jugador que tiene la mayor puntuacion
+            }
+            printf("\n");
+            fclose(fp);
+        }
+    }
+}
